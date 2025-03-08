@@ -2,6 +2,7 @@ import { expect, test } from 'vitest'
 import { getPullRequests } from './prs.js'
 import FixturePRs from './fixturePRs.json'
 import FixturePRs2 from './fixturePRs2.json'
+import FixtureReviews from './fixtureReviews.json'
 
 test('get the latest pull requests', async () => {
     const stubFetch = url => {
@@ -17,6 +18,8 @@ test('get the latest pull requests', async () => {
                     json: () => Promise.resolve(FixturePRs2)
                 }
             )
+        } else if(url.split('/').at(-1) === 'reviews') {
+            return Promise.resolve({ json: () => Promise.resolve(FixtureReviews)})
         }
     }
     const stubToken = "fake github token"

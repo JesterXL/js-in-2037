@@ -28,6 +28,18 @@ export const getPullRequests = ({ fetch, token, totalPages }) =>
                     pr.user.login === 'JesterXL'
             )
     )
+    .then(
+        prs =>
+            Promise.all(
+                prs.map(
+                    pr =>
+                        Promise.all([
+                            fetchReviews(fetch, token, pr),
+                            fetchComments(fetch, token, pr)
+                        ])
+                )
+            )
+    )
 
 
 const fetchPRs = (fetch, token, page) =>
@@ -42,3 +54,19 @@ const fetchPRs = (fetch, token, page) =>
         }
     )
     .then( r => r.json() )
+
+const fetchReviews = (fetch, token, pr) =>
+    fetch(
+        `https://github.com/JesterXL/final-cow-legend/pulls/${pr.number}/reviews`,
+        {
+            headers: {
+                accept: 'application/vnd.github+json',
+                authorization: `token ${token}`,
+                'X-GitHub-Api-Version': '2022-11-28'
+            }
+        }
+    )
+    .then( r => r.json() )
+
+const fetchComments = (fetch, token, pr) =>
+    ([])
