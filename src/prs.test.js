@@ -3,6 +3,7 @@ import { getPullRequests } from './prs.js'
 import FixturePRs from './fixturePRs.json'
 import FixturePRs2 from './fixturePRs2.json'
 import FixtureReviews from './fixtureReviews.json'
+import FixtureComments from './fixtureComments.json'
 
 test('get the latest pull requests', async () => {
     const stubFetch = url => {
@@ -20,6 +21,8 @@ test('get the latest pull requests', async () => {
             )
         } else if(url.split('/').at(-1) === 'reviews') {
             return Promise.resolve({ json: () => Promise.resolve(FixtureReviews)})
+        } else {
+            return Promise.resolve({ json: () => Promise.resolve(FixtureComments)})
         }
     }
     const stubToken = "fake github token"

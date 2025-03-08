@@ -69,4 +69,14 @@ const fetchReviews = (fetch, token, pr) =>
     .then( r => r.json() )
 
 const fetchComments = (fetch, token, pr) =>
-    ([])
+    fetch(
+        `https://github.com/JesterXL/final-cow-legend/issues/${pr.number}/comments`,
+        {
+            headers: {
+                accept: 'application/vnd.github+json',
+                authorization: `token ${token}`,
+                'X-GitHub-Api-Version': '2022-11-28'
+            }
+        }
+    )
+    .then( r => r.json() )
