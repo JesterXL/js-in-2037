@@ -31,5 +31,6 @@ test('get the latest pull requests', async () => {
         token: stubToken,
         totalPages: 2
     })
+    console.log("pullRequests:", pullRequests)
     expect(pullRequests.length).toBe(6)
 })
