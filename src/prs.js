@@ -15,6 +15,20 @@ export const getPullRequests = ({ fetch, token, totalPages }) =>
         prsArray =>
             prsArray.flat()
     )
+    .then(
+        prs =>
+            prs.filter(
+                pr => pr.draft === false
+            )
+    )
+    .then(
+        prs =>
+            prs.filter(
+                pr =>
+                    pr.user.login === 'JesterXL'
+            )
+    )
+
 
 const fetchPRs = (fetch, token, page) =>
     fetch(
