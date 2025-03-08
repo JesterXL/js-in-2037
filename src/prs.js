@@ -164,8 +164,8 @@ const commentsToBotReleases = comments =>
     .map(
         botReport => {
             switch(botReport.status.toLowerCase()) {
-                case 'awaitingjesterxlapproval':
-                    return 'Awaiting JesterXL Approval'
+                case 'awaiting approvers':
+                    return 'Awaiting Approval'
                 case 'approved':
                     return 'USDA Seleted, FDIC Approved, Checlist Completed ...S.O.B.'
                 case 'releasing':
@@ -196,5 +196,73 @@ const getPullRequestsStatus = (reviews, botReports) => {
         return 'Needs 1 more Approver'
     } else {
         return 'Needs 2 Approvers'
+    }
+}
+
+export const formatPullRequestsForEmail = prs =>
+    prs.reduce(
+        (acc, currentPR) => {
+            const consolidatedReviews = reviewsToConsolidatedReview(currentPR.reviews)
+            const reviewsString = consolidatedReviewsToEmailString(consolidatedReviews)
+           console.log("currentPR:", currentPR)
+            const whatToDo = pullRequestStatusToActionEmailString(currentPR)
+            return `${acc}${currentPR.title}\n${currentPR.url}\nOwner: ${currentPR.owner.login}\n${whatToDo}\n${reviewsString}\n`
+        },
+        ''
+    )
+    
+const reviewsToConsolidatedReview = reviews =>
+    reviews.reduce(
+        (acc, currentReview) => {
+            if(typeof acc[currentReview.login] === 'undefined') {
+                acc[currentReview.login] = {
+                    approved: false,
+                    commented: false
+                }
+            }
+            if(currentReview.state === 'Approved') {
+                acc[currentReview.login].approved = true
+            }
+            if(currentReview.state === 'Commented') {
+                acc[currentReview.login].commented = true
+            }
+            return acc
+        },
+        {}
+    )
+
+const consolidatedReviewsToEmailString = reviews =>
+    Object.keys(reviews).reduce(
+        (acc, userKey) => {
+            const { approved, commented } = reviews[userKey]
+            if(approved && commented) {
+                return `${acc}  - ${userKey} has commented & approved\n`
+            } else if(approved && commented === false) {
+                return `${acc}  - ${userKey} has approved\n`
+            } else if(approved === false && commented === true) {
+                return `${acc}  - ${userKey} has commented\n`
+            } else {
+                return acc
+            }
+        },
+        ''
+    )
+
+const pullRequestStatusToActionEmailString = pr => {
+    switch(pr.status) {
+        case 'Needs 2 Approvers':
+            return `  - 👀 Needs 2 approvers`
+        case 'Needs 1 more Approver':
+            return `  - 👀 Needs 1 more approver`
+        case 'Request JesterXL Approval to Release':
+            return `  - 📬 Email JesterXL for release, all approvers attained.`
+        case 'USDA Seleted, FDIC Approved, Checlist Completed ...S.O.B.':
+            return `  - 🚢 Need to message JesterXL for a release`
+        case 'Releasing...':
+            return `  - ⏳ Releasing, please stand by...`
+        case 'Failed to Release':
+            return `  - ❌ Release failed, JesterXL will be notified to look into it.`
+        case 'Unknown Status':
+            return `  - ❌ Release is in an unknown status, JesterXL will be notified to look into it.`
     }
 }
