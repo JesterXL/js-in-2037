@@ -1,15 +1,20 @@
 export const getPullRequests = ({ fetch, token, totalPages }) =>
-    Promise.all(
-        Array(totalPages)
-        .fill(0)
-        .map(
-            (i, index) =>
-                i + index + 1
-        )
-        .map(
-            page =>
-                fetchPRs(fetch, token, page)
-        )
+    // Promise.all(
+    //     Array.from({ length: totalPages})
+    //     .fill(0)
+    //     .map(
+    //         (i, index) =>
+    //             i + index + 1
+    //     )
+    //     .map(
+    //         page =>
+    //             fetchPRs(fetch, token, page)
+    //     )
+    // )
+    Array.fromAsync(
+        Array.from({ length: totalPages}),
+        (_, index) =>
+            fetchPRs(fetch, token, index + 1)
     )
     .then(
         prsArray =>
@@ -204,7 +209,6 @@ export const formatPullRequestsForEmail = prs =>
         (acc, currentPR) => {
             const consolidatedReviews = reviewsToConsolidatedReview(currentPR.reviews)
             const reviewsString = consolidatedReviewsToEmailString(consolidatedReviews)
-           console.log("currentPR:", currentPR)
             const whatToDo = pullRequestStatusToActionEmailString(currentPR)
             return `${acc}${currentPR.title}\n${currentPR.url}\nOwner: ${currentPR.owner.login}\n${whatToDo}\n${reviewsString}\n`
         },
