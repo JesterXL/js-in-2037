@@ -28,13 +28,6 @@ export const getPullRequests = ({ fetch, token, totalPages }) =>
     )
     .then(
         prs =>
-            prs.filter(
-                pr =>
-                    pr.user.login === 'JesterXL'
-            )
-    )
-    .then(
-        prs =>
             Promise.all(
                 prs.map(
                     pr =>
@@ -44,14 +37,28 @@ export const getPullRequests = ({ fetch, token, totalPages }) =>
                         ])
                         .then(
                             ([reviews, comments]) =>
-                                Promise.resolve([
+                                Promise.all([
                                     reviewsToUserReviews(reviews),
+                                    reviewsToUsers(fetch, token, reviews),
                                     commentsToBotReleases(comments)
                                 ])
                         )
                         .then(
-                            ([reviews, botReports]) =>
-                                Promise.resolve({
+                            ([reviews, users, botReports]) => {
+                                const reviewsWithEmail =
+                                    reviews.map(
+                                        (review, index) =>
+                                            ({ ...review, email: users[index].email })
+                                    )
+                                // const reviewsWithEmail =
+                                //     Array.from(
+                                //         Array.zip(reviews, users),
+                                //         ([review, user]) =>
+                                //             ({ ...review, email: user.email })
+                                //     )
+                                // console.log("reviewsWithEmail:", reviewsWithEmail)
+
+                                return Promise.resolve({
                                     title: pr.title,
                                     url: pr.html_url,
                                     number: pr.number,
@@ -60,6 +67,7 @@ export const getPullRequests = ({ fetch, token, totalPages }) =>
                                     owner: { login: pr.user.login, avatar: pr.user.avatar },
                                     dateGenerated: new Date().toISOString()
                                 })
+                            }
                         )
                 )
             )
@@ -112,24 +120,49 @@ const reviewsToUserReviews = reviews =>
             if(review.state === 'APPROVED') {
                 return { 
                     login: review.user.login, 
-                    avatar: review.user.avatar,
+                    avatar: review.user.avatar_url,
                     reviewState: 'Approved'
                 }
             } else if(review.state === 'COMMENTED') {
                 return { 
                     login: review.user.login, 
-                    avatar: review.user.avatar,
+                    avatar: review.user.avatar_url,
                     reviewState: 'Commented'
                 }
             } else {
                 return { 
                     login: review.user.login, 
-                    avatar: review.user.avatar,
+                    avatar: review.user.avatar_url,
                     reviewState: 'Other'
                 }
             }
         }
     )
+
+const reviewsToUsers = (fetch, token, reviews) =>
+    Promise.all(
+        reviews.map(
+            review =>
+                review.user.login
+        )
+        .map(
+            login =>
+                fetchUser(fetch, token, login)
+        )
+    )
+
+const fetchUser = (fetch, token, login) =>
+    fetch(
+        `https://github.com/JesterXL/final-cow-legend/users/${login}`,
+        {
+            headers: {
+                accept: 'application/vnd.github+json',
+                authorization: `token ${token}`,
+                'X-GitHub-Api-Version': '2022-11-28'
+            }
+        }
+    )
+    .then( r => r.json() )
 
 const commentsToBotReleases = comments =>
     comments.filter(
@@ -270,3 +303,8 @@ const pullRequestStatusToActionEmailString = pr => {
             return `  - ❌ Release is in an unknown status, JesterXL will be notified to look into it.`
     }
 }
+
+Array.zip = (a, b) => a.map(
+    (e, i) =>
+        ( [ a[i], b[i] ])
+)

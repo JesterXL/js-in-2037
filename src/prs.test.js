@@ -4,6 +4,8 @@ import FixturePRs from './fixturePRs.json'
 import FixturePRs2 from './fixturePRs2.json'
 import FixtureReviews from './fixtureReviews.json'
 import FixtureComments from './fixtureComments.json'
+import FixtureUserJesterXL from './fixtureUserJesterXL.json'
+import FixtureUserCow from './fixtureUserCow.json'
 
 const delay = ms =>
     new Promise(
@@ -16,7 +18,7 @@ const delay = ms =>
 const now = new Date().valueOf()
 
 const stubFetch = url => 
-    delay(1000)
+    delay(0)
     .then( () =>
     {
         if(url === 'https://github.com/JesterXL/final-cow-legend/pulls?state=open&per_page=100&page=1') {
@@ -31,6 +33,18 @@ const stubFetch = url =>
             return Promise.resolve(
                 {
                     json: () => Promise.resolve(FixturePRs2)
+                }
+            )
+        } else if(url === 'https://github.com/JesterXL/final-cow-legend/users/JesterXL') {
+            return Promise.resolve(
+                {
+                    json: () => Promise.resolve(FixtureUserJesterXL)
+                }
+            )
+        } else if(url === 'https://github.com/JesterXL/final-cow-legend/users/Cow') {
+            return Promise.resolve(
+                {
+                    json: () => Promise.resolve(FixtureUserCow)
                 }
             )
         } else if(url.split('/').at(-1) === 'reviews') {
@@ -48,6 +62,7 @@ test('get the latest pull requests', async () => {
         token: stubToken,
         totalPages: 2
     })
+    console.log("reviews:", pullRequests[0].reviews)
     expect(pullRequests.length).toBe(6)
 })
 
