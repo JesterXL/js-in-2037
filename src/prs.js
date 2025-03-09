@@ -45,24 +45,23 @@ export const getPullRequests = ({ fetch, token, totalPages }) =>
                         )
                         .then(
                             ([reviews, users, botReports]) => {
-                                const reviewsWithEmail =
-                                    reviews.map(
-                                        (review, index) =>
-                                            ({ ...review, email: users[index].email })
-                                    )
                                 // const reviewsWithEmail =
-                                //     Array.from(
-                                //         Array.zip(reviews, users),
-                                //         ([review, user]) =>
-                                //             ({ ...review, email: user.email })
+                                //     reviews.map(
+                                //         (review, index) =>
+                                //             ({ ...review, email: users[index].email })
                                 //     )
-                                // console.log("reviewsWithEmail:", reviewsWithEmail)
+                                const reviewsWithEmail =
+                                    Array.from(
+                                        Array.zip(reviews, users),
+                                        ([review, user]) =>
+                                            ({ ...review, email: user.email })
+                                    )
 
                                 return Promise.resolve({
                                     title: pr.title,
                                     url: pr.html_url,
                                     number: pr.number,
-                                    reviews,
+                                    reviews: reviewsWithEmail,
                                     status: getPullRequestsStatus(reviews, botReports),
                                     owner: { login: pr.user.login, avatar: pr.user.avatar },
                                     dateGenerated: new Date().toISOString()
