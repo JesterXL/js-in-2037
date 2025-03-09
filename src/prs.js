@@ -74,7 +74,7 @@ export const getPullRequests = ({ fetch, token, totalPages }) =>
     )
 
 
-const fetchPRs = (fetch, token, page) =>
+const fetchPRs = (fetch, token, page, retry=1) =>
     fetch(
         `https://github.com/JesterXL/final-cow-legend/pulls?state=open&per_page=100&page=${page}`,
         {
@@ -85,7 +85,23 @@ const fetchPRs = (fetch, token, page) =>
             }
         }
     )
-    .then( r => r.json() )
+    .then(
+        r => {
+            if(r.status === 200) {
+                return r.json()
+            } else if(r.status === 403 || r.status === 429) {
+                if(retry >= 3) {
+                    return Promise.reject(new Error(`Retried ${retry} times and failed.`))
+                } else {
+                    return delay(r.headers['x-ratelimit-reset'])
+                    .then(
+                        () =>
+                            fetchPRs(fetch, token, page)
+                    )
+                }
+            }
+        }
+    )
 
 const fetchReviews = (fetch, token, pr) =>
     fetch(
@@ -307,3 +323,12 @@ Array.zip = (a, b) => a.map(
     (e, i) =>
         ( [ a[i], b[i] ])
 )
+
+const delay = ms =>
+    new Promise(
+        resolve =>
+            setTimeout(
+                resolve,
+                ms
+            )
+    )

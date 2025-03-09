@@ -25,20 +25,22 @@ const stubFetch = url =>
             console.log((new Date().valueOf() - now) / 1000)
             return Promise.resolve(
                 {
-                    json: () => Promise.resolve(FixturePRs)
+                    json: () => Promise.resolve(FixturePRs),
+                    status: 200
                 }
             )
         } else if(url === 'https://github.com/JesterXL/final-cow-legend/pulls?state=open&per_page=100&page=2') {
             console.log((new Date().valueOf() - now) / 1000)
             return Promise.resolve(
                 {
-                    json: () => Promise.resolve(FixturePRs2)
+                    json: () => Promise.resolve(FixturePRs2),
+                    status: 200
                 }
             )
         } else if(url === 'https://github.com/JesterXL/final-cow-legend/users/JesterXL') {
             return Promise.resolve(
                 {
-                    json: () => Promise.resolve(FixtureUserJesterXL)
+                    json: () => Promise.resolve(FixtureUserJesterXL),
                 }
             )
         } else if(url === 'https://github.com/JesterXL/final-cow-legend/users/Cow') {
