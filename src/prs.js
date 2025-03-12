@@ -1,4 +1,4 @@
-export const getPullRequests = ({ fetch, token, totalPages }) =>
+export const getPullRequests = (fetch, token, totalPages) =>
     // Promise.all(
     //     Array.from({ length: totalPages})
     //     .fill(0)
@@ -45,16 +45,10 @@ export const getPullRequests = ({ fetch, token, totalPages }) =>
                         )
                         .then(
                             ([reviews, users, botReports]) => {
-                                // const reviewsWithEmail =
-                                //     reviews.map(
-                                //         (review, index) =>
-                                //             ({ ...review, email: users[index].email })
-                                //     )
                                 const reviewsWithEmail =
-                                    Array.from(
-                                        Array.zip(reviews, users),
-                                        ([review, user]) =>
-                                            ({ ...review, email: user.email })
+                                    reviews.map(
+                                        (review, index) =>
+                                            ({ ...review, email: users[index].email })
                                     )
 
                                 return Promise.resolve({
@@ -96,7 +90,7 @@ const fetchPRs = (fetch, token, page, retry=1) =>
                     return delay(r.headers['x-ratelimit-reset'])
                     .then(
                         () =>
-                            fetchPRs(fetch, token, page)
+                            fetchPRs(fetch, token, page, retry + 1)
                     )
                 }
             }

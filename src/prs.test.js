@@ -59,11 +59,11 @@ const stubFetch = url =>
 const stubToken = "fake github token"
 
 test('get the latest pull requests', async () => {
-    const pullRequests = await getPullRequests({
-        fetch: stubFetch,
-        token: stubToken,
-        totalPages: 2
-    })
+    const pullRequests = await getPullRequests(
+        stubFetch,
+        stubToken,
+        2
+    )
     expect(pullRequests.length).toBe(6)
 })
 
@@ -99,11 +99,11 @@ test('get the latest pull requests', async () => {
 //   - 👀 Needs 2 approvers
 
 // `
-//     const pullRequests = await getPullRequests({
-//         fetch: stubFetch,
-//         token: stubToken,
-//         totalPages: 2
-//     })
+//     const pullRequests = await getPullRequests(
+//         stubFetch,
+//         stubToken,
+//         2
+//     )
 //     const result = formatPullRequestsForEmail(pullRequests)
 //     expect(result).toBe(expected)
 // })
