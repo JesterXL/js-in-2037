@@ -67,43 +67,43 @@ test('get the latest pull requests', async () => {
     expect(pullRequests.length).toBe(6)
 })
 
-// test('format pull requests for email', async () => {
-//     const expected = `Amazing new feature
-// https://github.com/octocat/Hello-World/pull/1347
-// Owner: JesterXL
-//   - 👀 Needs 2 approvers
+test('format pull requests for email', async () => {
+    const expected = `Amazing new feature
+https://github.com/octocat/Hello-World/pull/1347
+Owner: JesterXL
+  - 👀 Needs 2 approvers
 
-// Amazing new feature
-// https://github.com/octocat/Hello-World/pull/1347
-// Owner: JesterXL
-//   - 👀 Needs 2 approvers
+Amazing new feature
+https://github.com/octocat/Hello-World/pull/1347
+Owner: JesterXL
+  - 👀 Needs 2 approvers
 
-// Amazing new feature
-// https://github.com/octocat/Hello-World/pull/1347
-// Owner: JesterXL
-//   - 👀 Needs 2 approvers
+Amazing new feature
+https://github.com/octocat/Hello-World/pull/1347
+Owner: JesterXL
+  - 👀 Needs 2 approvers
 
-// Amazing new feature
-// https://github.com/octocat/Hello-World/pull/1347
-// Owner: JesterXL
-//   - 👀 Needs 2 approvers
+Amazing new feature
+https://github.com/octocat/Hello-World/pull/1347
+Owner: JesterXL
+  - 👀 Needs 2 approvers
 
-// Amazing new feature
-// https://github.com/octocat/Hello-World/pull/1347
-// Owner: JesterXL
-//   - 👀 Needs 2 approvers
+Amazing new feature
+https://github.com/octocat/Hello-World/pull/1347
+Owner: JesterXL
+  - 👀 Needs 2 approvers
 
-// Amazing new feature
-// https://github.com/octocat/Hello-World/pull/1347
-// Owner: JesterXL
-//   - 👀 Needs 2 approvers
+Amazing new feature
+https://github.com/octocat/Hello-World/pull/1347
+Owner: JesterXL
+  - 👀 Needs 2 approvers
 
-// `
-//     const pullRequests = await getPullRequests(
-//         stubFetch,
-//         stubToken,
-//         2
-//     )
-//     const result = formatPullRequestsForEmail(pullRequests)
-//     expect(result).toBe(expected)
-// })
+`
+    const pullRequests = await getPullRequests(
+        stubFetch,
+        stubToken,
+        2
+    )
+    const result = formatPullRequestsForEmail(pullRequests)
+    expect(result).toBe(expected)
+})
